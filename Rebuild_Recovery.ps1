@@ -1,1 +1,1 @@
-Write-Host "Congratulations! Your first script executed successfully"
+#This is the start of the script to rebuild windows 10 recovery partitions.
