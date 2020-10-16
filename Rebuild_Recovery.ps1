@@ -1,10 +1,7 @@
 #This is the start of the script to rebuild windows 10 recovery partitions.
 
 #Launch Elevated PowerShell Prompt
-#Start-Process PowerShell -Verb RunAs
-
-#Allow Scripts to run on local machine
-#Set-ExecutionPolicy -ExecutionPolicy Undefined LocalMachine
+#Requires -RunAsAdministrator
 
 #Check for Windows 10 
 function Get-OS {
@@ -17,7 +14,24 @@ if ($OSversion -match 'Windows 10 pro') {
     Write-Host "This is a Windows 10 Pro computer"
 }
 else {
-    Write-Host "This is not a Windows 10 pro computer"
+    Write-Host "Your operating system is not compatitable with this program"
+    exit
 }
-#Check if Recovery partition is enabled.
-#reagentc /info
+#Check if Recovery partition is enabled.  
+    reagentc /info > C:\Recovery.txt
+
+$lines = Get-Content C:\Recovery.txt
+
+if ($lines[3] -match ' Windows RE status:         Enabled') {
+    Write-Host "The Recovery is enabled."
+    exit
+}
+else {
+    Write-Host "The Recovery is not enabled."
+}
+
+#Automating diskpart 
+New-Item -Name listdisk.txt -ItemType File -Force | Out-Null 
+Add-Content -path C:\listdisk.txt "list disk"
+
+$listdisk=(diskpart.exe /s listdisk.txt)
